@@ -1,0 +1,8 @@
+/-----------------------------------------
+| State-action rewards from modified Q-Learning
+\-----------------------------------------
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000C9193C8>
+ -- right : 0.72
+ -- left : 0.00
+

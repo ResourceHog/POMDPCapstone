@@ -169,24 +169,24 @@ class POMDPEnvironmentConverter():
     
     def Projectin2D(self,approximatePOMDP):
         newPOMDP = []
-        for stateindx in approximatePOMDP.keys():
+        for stateindx in range(0,len(approximatePOMDP)):
             newCoords = []
-            for point in approximatePOMDP[stateinx].coords:
-                newCoords[stateindx].append(self.translateNDpointto2D(point))
+            for point in approximatePOMDP[stateindx].coords:
+                newCoords.append(self.translateNDpointto2D(point))
             newPOMDP.append(Polygon(newCoords))
         return newPOMDP
     
     def translateNDpointto2D(self,point):
-        centroid = self.getCentroidFromPoint(point)
-        states = len(centroid)
-        baserad = 2/states
-        xcoord = ycoord = centroid[0]
+        centroid = float(1)/len(point)
+        states = len(point)
+        baserad = float(2)/states
+        xcoord = ycoord = centroid
         axis = []
-        for axis in range(1,states+1):
-            axis.append(baserad*axis)    
-        for axis, probability in (axis,point):
-            xcoord = xcoord + (probability - centroid[0]) * math.cos(axis*math.pi)
-            ycoord = ycoord + (probability - centroid[0]) * math.sin(axis*math.pi)
+        for direction in range(1,states+1):
+            axis.append(baserad*direction)    
+        for indx in range(0,len(point)):
+            xcoord = xcoord + (point[indx] - centroid) * math.cos(axis[indx]*math.pi)
+            ycoord = ycoord + (point[indx] - centroid) * math.sin(axis[indx]*math.pi)
         return [xcoord,ycoord]  
     
     def getPolygonFrom(self, PointVectors): #list of lists containing floats
