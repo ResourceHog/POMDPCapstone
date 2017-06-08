@@ -61,6 +61,7 @@ class POMDPEnvironmentConverter():
         self.pomdpStates = self.generateMDPfromPOMDP(len(self.States))
         self.environment = env
         self.reset()
+        self.currentBelief = []
             
     def getState(self):
         for state in self.pomdpStates:
