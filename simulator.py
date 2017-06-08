@@ -672,3 +672,4 @@ class Simulator(object):
             self.pygame.time.wait(self.frame_delay)
         self.screen.blit(self.font.render(pause_text, True, self.bg_color, self.bg_color), (400, self.height - 30))
         self.start_time += (time.time() - abs_pause_time)
+>>>>>>> df11c878d6e5aaae814194438e7a769c07156d06
