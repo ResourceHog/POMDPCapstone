@@ -253,14 +253,7 @@ def run():
     #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
     #   n_test     - discrete number of testing trials to perform, default is 0
     sim.run(n_test = 10)
-<<<<<<< HEAD
-    
-    #line1 = [0.0, 0.3333333333333333, 0.0, 0.6666666666666666]
-    #vectorline = agent.environmentmodel.translateNDpointto2D(line1)
-    #print vectorline
-=======
 
->>>>>>> df11c878d6e5aaae814194438e7a769c07156d06
 
 if __name__ == '__main__':
     run()
