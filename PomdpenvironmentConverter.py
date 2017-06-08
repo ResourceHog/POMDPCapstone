@@ -12,7 +12,8 @@ Created on Sun Apr 09 19:37:17 2017
 #this is a bunch of classes that I use for 
 
 import numpy as np
-from collections import OrderedDict
+import math
+
 #represents a line defined as two vectors (which are represented as a numpy aray.) getPoint()
 # is used to also get arbitrary points on this line.
 class vectorLine():
@@ -60,10 +61,11 @@ class POMDPEnvironmentConverter():
         self.pomdpStates = self.generateMDPfromPOMDP(len(self.States))
         self.environment = env
         self.reset()
+        self.currentBelief = []
             
     def getState(self):
         for state in self.pomdpStates:
-            triangles = self.getTriangles(state.coords,self.currentBelief)
+            triangles = self.getTriangles(state.coords,self.translateNDpointto2D(self.currentBelief))
             sumtriangles = 0
             for triangle in triangles:
                 sumtriangles += triangle.getArea()
@@ -95,7 +97,7 @@ class POMDPEnvironmentConverter():
     
     #estimates the probability of being in some state given an action, observation, and what the previous probability of being in that state was.
     def StateEstimator(self,state,Action,Observation,previousBelief):
-        numerator = self.Observation(Action,state,Observation)
+        numerator = self.Observation(state,Observation)
         sumofT = 0.0
         for s in self.States.keys():
             sumofT += self.ETransition(s,Action,state) * previousBelief[s] # times the estimated probability of this state in the previous belief... also this will fail.
@@ -107,7 +109,7 @@ class POMDPEnvironmentConverter():
         denominator = 0
         
         for s1 in self.States:
-            sum1 = self.Observation(Action,s1,Observation)
+            sum1 = self.Observation(s1,Observation)
             sumofT = 0.0
             for s in self.States.keys():
                 sumofT += self.ETransition(s,Action,s1) * previousBelief[s] # times the estimated probability of this state in the previous belief... also this will fail.
@@ -123,26 +125,13 @@ class POMDPEnvironmentConverter():
             if state == postState:
                 return pcloud[state]
         return 0.0
-    #checks the chance of observing observation given that it took an action and was in some state.
-    def Observation(self, action,state,observation):
-        if state == 2 and action == 'right' and observation == 'green':
-            pass
-        pcloud = self.environment.Transition(state,action)
-        observationcloud = OrderedDict()
-        
-        #sum up the probabilities.
-        for s in pcloud.keys():
-            actualobservation = self.environment.sense(s)
-            #if this is a never before seen observation add it to the observationcloud dictionary else add the probability to the existing one
-            if actualobservation in observationcloud:
-                observationcloud[actualobservation] += pcloud[s]
-            else:
-                observationcloud[actualobservation] = pcloud[s] #default value is 0 so just setting it to the value of pcloud is the same as 0 + pcloud[s]
-        #then if observation is still not in observationcloud. then the probability is 0.0 else 
-        if observation in observationcloud:
-            return observationcloud[observation]
+    #probability of making observation given that you are in some state.
+    def Observation(self, state, observation):
+        actualobservation = self.environment.sense(state)
+        if observation == actualobservation:
+            return 1.0
         else:
-            return float(0)
+            return 0.0
         
         
         
@@ -173,7 +162,33 @@ class POMDPEnvironmentConverter():
         
         #at this point it should be a co-mdp. This next line then turns this space of infinite states into a finite space.                              
         ApproximatePOMDP = self.getBaseStates(triangles) #this splits each trangle into a number of polygons eqaul to resolution. Each of these polygons represents a State the Agent can be in.
+        ApproximatePOMDP = self.Projectin2D(ApproximatePOMDP)
         return ApproximatePOMDP
+
+    def geCentroidFromPoint(self,point):
+        return 1/len(point)
+    
+    def Projectin2D(self,approximatePOMDP):
+        newPOMDP = []
+        for stateindx in range(0,len(approximatePOMDP)):
+            newCoords = []
+            for point in approximatePOMDP[stateindx].coords:
+                newCoords.append(self.translateNDpointto2D(point))
+            newPOMDP.append(Polygon(newCoords))
+        return newPOMDP
+    
+    def translateNDpointto2D(self,point):
+        centroid = float(1)/len(point)
+        states = len(point)
+        baserad = float(2)/states
+        xcoord = ycoord = centroid
+        axis = []
+        for direction in range(1,states+1):
+            axis.append(baserad*direction)    
+        for indx in range(0,len(point)):
+            xcoord = xcoord + (point[indx] - centroid) * math.cos(axis[indx]*math.pi)
+            ycoord = ycoord + (point[indx] - centroid) * math.sin(axis[indx]*math.pi)
+        return [xcoord,ycoord]  
     
     def getPolygonFrom(self, PointVectors): #list of lists containing floats
         PrimaryPolygon = []

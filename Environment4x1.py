@@ -29,6 +29,8 @@ class Environment4x1(object):
         self.primary_agent = None
         self.step_data = {}
         self.success = False
+        self.TIMELIMIT = 10
+        self.timelapsed = 0
         
         self.trial_data = {
             'testing': False, # if the trial is for testing a learned policy
@@ -58,10 +60,14 @@ class Environment4x1(object):
                                     #what I mean is that the rules of the environment are not the same rules that govern the execution of its code.
         print "agent is in state {}".format(self.agent_states[self.primary_agent]['location'])
         self.trial_data['age'] += 1
+        self.timelapsed += 1
         if self.agent_states[self.primary_agent]['location'] == 2:
             self.success = True
             self.trial_data['success'] = self.success
             self.done = True
+        else:
+            if self.timelapsed >= self.TIMELIMIT:
+                self.done = True
             
         
         
@@ -143,6 +149,7 @@ class Environment4x1(object):
         self.reward = 0
         self.success = False
         self.done = False
+        self.timelapsed = 0
         
         
         # Reset metrics for this trial (step data will be set during the step)

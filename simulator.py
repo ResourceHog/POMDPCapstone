@@ -44,7 +44,7 @@ class Simulator(object):
     def __init__(self, env, size=None, update_delay=2.0, display=True, log_metrics=False, optimized=False):
         self.env = env
         self.blocksize = 100
-        self.size = size if size is not None else (4 * self.blocksize,1*self.blocksize)
+        self.size = size if size is not None else (4 * self.blocksize,int(2.2*self.blocksize))
         self.width, self.height = self.size
         self.road_width = 44
 
@@ -140,6 +140,8 @@ class Simulator(object):
             else:
                 if trial > n_test:
                     break
+
+
 
             # Pretty print to terminal
             print 
@@ -273,7 +275,23 @@ class Simulator(object):
             else:
                 print "Agent not set to learn."
 
-    
+    def renderMindState(self, xadjustment,yadjustment):
+        magnification = 50
+        beliefstate = self.env.primary_agent.environmentmodel.currentBelief
+        beliefstate = self.env.primary_agent.environmentmodel.translateNDpointto2D(beliefstate)
+        beliefstate[0] = int((beliefstate[0]*magnification) + xadjustment)
+        beliefstate[1] =int( (beliefstate[1]*magnification) + yadjustment)
+        for state in self.env.primary_agent.environmentmodel.pomdpStates:
+            coords = []
+            for x,y in state.coords:
+                coords.append([(x*magnification)+xadjustment,(y * magnification) + yadjustment])
+            if self.env.primary_agent.environmentmodel.getState() == state:
+                self.pygame.draw.polygon(self.screen,self.colors["red"],coords,0)
+            else:
+                self.pygame.draw.polygon(self.screen,self.colors["red"],coords,1)
+            
+        
+        self.pygame.draw.circle(self.screen, self.colors["orange"],beliefstate,3,0)
                 
     def render(self, trial, testing=False):
         """ This is the GUI render display of the simulation. 
@@ -312,7 +330,7 @@ class Simulator(object):
                 # Draw simple agent (circle with a short line segment poking out to indicate heading)
             self.pygame.draw.circle(self.screen, agent_color, agent_pos, self.blocksize/3)
             
-            
+        self.renderMindState(self.blocksize/2,1.4*self.blocksize)
 
         # Flip buffers
         self.pygame.display.flip()
