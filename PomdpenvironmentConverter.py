@@ -65,11 +65,14 @@ class POMDPEnvironmentConverter():
             
     def getState(self):
         for state in self.pomdpStates:
+            if self.currentBelief == [1.0,0.0,0.0,0.0]:
+                if state.coords[0] == 1.0:
+                    pass
             triangles = self.getTriangles(state.coords,self.translateNDpointto2D(self.currentBelief))
             sumtriangles = 0
             for triangle in triangles:
                 sumtriangles += triangle.getArea()
-            if state <= sumtriangles:
+            if state.getArea() >= sumtriangles:
                 return state
             
         return None #if this gets executed something went wrong.
@@ -171,6 +174,8 @@ class POMDPEnvironmentConverter():
     def Projectin2D(self,approximatePOMDP):
         newPOMDP = []
         for stateindx in range(0,len(approximatePOMDP)):
+            if stateindx == 1:
+                pass
             newCoords = []
             for point in approximatePOMDP[stateindx].coords:
                 newCoords.append(self.translateNDpointto2D(point))
@@ -178,16 +183,18 @@ class POMDPEnvironmentConverter():
         return newPOMDP
     
     def translateNDpointto2D(self,point):
+        if point[0] == 1.0 and point[1] == 0.0 and point[2] == 0.0 and point[3] == 0.0:
+            pass
         centroid = float(1)/len(point)
         states = len(point)
         baserad = float(2)/states
-        xcoord = ycoord = centroid
+        xcoord = ycoord = 0.0
         axis = []
         for direction in range(1,states+1):
-            axis.append(baserad*direction)    
+            axis.append(baserad*direction*math.pi)    
         for indx in range(0,len(point)):
-            xcoord = xcoord + (point[indx] - centroid) * math.cos(axis[indx]*math.pi)
-            ycoord = ycoord + (point[indx] - centroid) * math.sin(axis[indx]*math.pi)
+            xcoord = xcoord + (math.cos(axis[indx]) * point[indx])
+            ycoord = ycoord + (math.sin(axis[indx]) * point[indx])
         return [xcoord,ycoord]  
     
     def getPolygonFrom(self, PointVectors): #list of lists containing floats

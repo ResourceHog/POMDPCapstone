@@ -70,8 +70,8 @@ class Simulator(object):
                 #self.agent_sprite_size = (32, 32)
                 self.primary_agent_sprite_size = (42, 42)
                 self.agent_circle_radius = 20  # radius of circle, when using simple representation
-                
-                self.font = self.pygame.font.Font(None, 20)
+                #if self.pygame.font != None:
+                #   self.font = self.pygame.font.Font(None, 20)
                 self.paused = False
             except ImportError as e:
                 self.display = False
@@ -276,6 +276,7 @@ class Simulator(object):
                 print "Agent not set to learn."
 
     def renderMindState(self, xadjustment,yadjustment):
+        currentState = self.env.primary_agent.environmentmodel.getState()
         magnification = 50
         beliefstate = self.env.primary_agent.environmentmodel.currentBelief
         beliefstate = self.env.primary_agent.environmentmodel.translateNDpointto2D(beliefstate)
@@ -285,7 +286,7 @@ class Simulator(object):
             coords = []
             for x,y in state.coords:
                 coords.append([(x*magnification)+xadjustment,(y * magnification) + yadjustment])
-            if self.env.primary_agent.environmentmodel.getState() == state:
+            if  currentState == state:
                 self.pygame.draw.polygon(self.screen,self.colors["red"],coords,0)
             else:
                 self.pygame.draw.polygon(self.screen,self.colors["red"],coords,1)
@@ -317,7 +318,7 @@ class Simulator(object):
 
             
         # * Dynamic elements
-        self.font = self.pygame.font.Font(None, 20)
+        #self.font = self.pygame.font.Font(None, 20)
         for agent, state in self.env.agent_states.iteritems():
             # Compute precise agent location here (back from the intersection some)
             
