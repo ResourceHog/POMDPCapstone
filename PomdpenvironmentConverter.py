@@ -64,11 +64,12 @@ class POMDPEnvironmentConverter():
         self.currentBelief = []
             
     def getState(self):
+        belief2d = self.translateNDpointto2D(self.currentBelief)
         for state in self.pomdpStates:
             if self.currentBelief == [1.0,0.0,0.0,0.0]:
                 if state.coords[0] == 1.0:
                     pass
-            triangles = self.getTriangles(state.coords,self.translateNDpointto2D(self.currentBelief))
+            triangles = self.getTriangles(state.coords,belief2d)
             sumtriangles = 0
             for triangle in triangles:
                 sumtriangles += triangle.getArea()
@@ -145,11 +146,10 @@ class POMDPEnvironmentConverter():
         #number of points is the number of states*(Resolution+1)
         PointVectors = []
         #Center of the two dimentional polygon this represents the point at which any state is equally likely.
-        centroid = []
+        centroid = [0,0]
         #number of lines in the polygon.
         PrimaryPolygon = []
-        for State in range(0,States):
-             centroid.append(maximumUncertainty)
+        
         for vector in range(0,States):#create a vector representation for each state.
             coordinate = []
             for State in range(0,States):
@@ -157,6 +157,7 @@ class POMDPEnvironmentConverter():
                     coordinate.append(1)
                 else:
                     coordinate.append(0)
+            coordinate = self.translateNDpointto2D(coordinate)
             PointVectors.append(coordinate)
     
         PrimaryPolygon = self.getPolygonFrom(PointVectors) #this is the space that contains the entire co-MDP
@@ -165,27 +166,21 @@ class POMDPEnvironmentConverter():
         
         #at this point it should be a co-mdp. This next line then turns this space of infinite states into a finite space.                              
         ApproximatePOMDP = self.getBaseStates(triangles) #this splits each trangle into a number of polygons eqaul to resolution. Each of these polygons represents a State the Agent can be in.
-        ApproximatePOMDP = self.Projectin2D(ApproximatePOMDP)
+        
         return ApproximatePOMDP
 
     def geCentroidFromPoint(self,point):
         return 1/len(point)
     
     def Projectin2D(self,approximatePOMDP):
-        newPOMDP = []
-        for stateindx in range(0,len(approximatePOMDP)):
-            if stateindx == 1:
-                pass
-            newCoords = []
-            for point in approximatePOMDP[stateindx].coords:
-                newCoords.append(self.translateNDpointto2D(point))
-            newPOMDP.append(Polygon(newCoords))
+        newPOMDP = None
+        newCoords = []
+        for point in approximatePOMDP:
+            newCoords.append(self.translateNDpointto2D(point))
+        newPOMDP = Polygon(newCoords)
         return newPOMDP
     
     def translateNDpointto2D(self,point):
-        if point[0] == 1.0 and point[1] == 0.0 and point[2] == 0.0 and point[3] == 0.0:
-            pass
-        centroid = float(1)/len(point)
         states = len(point)
         baserad = float(2)/states
         xcoord = ycoord = 0.0
@@ -260,7 +255,8 @@ class POMDPEnvironmentConverter():
         return States
             
 
-line1 = [0,1,0]
-line2 = [1,0,0]
-vectorline = vectorLine(line1,line2)
-print vectorline.getPoint(-.3)
+polygon1 = Polygon([[0,1],[-22,44],[0,66]])
+polygon2 = Polygon([[0,66],[-33,66],[0,1],[-22,44]])
+print polygon1.getArea()
+print polygon2.getArea()
+print polygon1.getArea() <= polygon2.getArea()
