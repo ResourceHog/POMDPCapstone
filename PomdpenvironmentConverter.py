@@ -66,9 +66,6 @@ class POMDPEnvironmentConverter():
     def getState(self):
         belief2d = self.translateNDpointto2D(self.currentBelief)
         for state in self.pomdpStates:
-            if self.currentBelief == [1.0,0.0,0.0,0.0]:
-                if state.coords[0] == 1.0:
-                    pass
             triangles = self.getTriangles(state.coords,belief2d)
             sumtriangles = 0
             for triangle in triangles:
@@ -161,13 +158,16 @@ class POMDPEnvironmentConverter():
             PointVectors.append(coordinate)
     
         PrimaryPolygon = self.getPolygonFrom(PointVectors) #this is the space that contains the entire co-MDP
+        for vectorline in PrimaryPolygon:
+            print vectorline.vector1
+            print vectorline.vector2
         polypoints = self.getPolypoints(PrimaryPolygon) #this splits each line in the polygon into a number of line segments eqaul to the resolution
         triangles =  self.getTriangles(polypoints,centroid) #this takes the line segments and creates a triangle by adding a centroid to each segment.
         
         #at this point it should be a co-mdp. This next line then turns this space of infinite states into a finite space.                              
         ApproximatePOMDP = self.getBaseStates(triangles) #this splits each trangle into a number of polygons eqaul to resolution. Each of these polygons represents a State the Agent can be in.
         
-        return ApproximatePOMDP
+        return [Polygon(PointVectors)]
 
     def geCentroidFromPoint(self,point):
         return 1/len(point)
@@ -255,8 +255,3 @@ class POMDPEnvironmentConverter():
         return States
             
 
-polygon1 = Polygon([[0,1],[-22,44],[0,66]])
-polygon2 = Polygon([[0,66],[-33,66],[0,1],[-22,44]])
-print polygon1.getArea()
-print polygon2.getArea()
-print polygon1.getArea() <= polygon2.getArea()
