@@ -64,13 +64,14 @@ class POMDPEnvironmentConverter():
         self.currentBelief = []
             
     def getState(self):
+        Bounds = .000000000000001 #to account for weird floating point errors.
         belief2d = self.translateNDpointto2D(self.currentBelief)
         for state in self.pomdpStates:
             triangles = self.getTriangles(state.coords,belief2d)
             sumtriangles = 0
             for triangle in triangles:
                 sumtriangles += triangle.getArea()
-            if state.getArea() >= sumtriangles:
+            if state.getArea() + Bounds >= sumtriangles:
                 return state
             
         return None #if this gets executed something went wrong.
@@ -157,17 +158,19 @@ class POMDPEnvironmentConverter():
             coordinate = self.translateNDpointto2D(coordinate)
             PointVectors.append(coordinate)
     
-        PrimaryPolygon = self.getPolygonFrom(PointVectors) #this is the space that contains the entire co-MDP
-        for vectorline in PrimaryPolygon:
-            print vectorline.vector1
-            print vectorline.vector2
-        polypoints = self.getPolypoints(PrimaryPolygon) #this splits each line in the polygon into a number of line segments eqaul to the resolution
+        #PrimaryPolygon = self.getPolygonFrom(PointVectors) #this is the space that contains the entire co-MDP
+        #for vectorline in PrimaryPolygon:
+        #    print vectorline.vector1
+        #    print vectorline.vector2
+        polypoints = self.getPolypoints(PointVectors) #this splits each line in the polygon into a number of line segments eqaul to the resolution
         triangles =  self.getTriangles(polypoints,centroid) #this takes the line segments and creates a triangle by adding a centroid to each segment.
-        
+        for triangle in triangles:
+            print " ____ "
+            print triangle.coords
         #at this point it should be a co-mdp. This next line then turns this space of infinite states into a finite space.                              
         ApproximatePOMDP = self.getBaseStates(triangles) #this splits each trangle into a number of polygons eqaul to resolution. Each of these polygons represents a State the Agent can be in.
         
-        return [Polygon(PointVectors)]
+        return ApproximatePOMDP
 
     def geCentroidFromPoint(self,point):
         return 1/len(point)
@@ -206,10 +209,14 @@ class POMDPEnvironmentConverter():
     #
     def getPolypoints(self, PrimaryPolygon): #list of vector lines, int
         polypoints = []
-        for line in PrimaryPolygon:
-            polypoints.append(line.vector1)
-            for i in range(1,self.Resolution): 
-                polypoints.append(line.getPoint(float(-i)/self.Resolution))            
+        
+        for line in range(0,len(PrimaryPolygon)):
+            if line == len(PrimaryPolygon)-1:
+                vLine = vectorLine(PrimaryPolygon[line],PrimaryPolygon[0])
+            else:
+                vLine = vectorLine(PrimaryPolygon[line],PrimaryPolygon[line+1])
+            for i in range(0,self.Resolution): 
+                polypoints.append(vLine.getPoint(float(-i)/self.Resolution))            
             #polypoints.append(line.vector2)
             
         #polypoints.remove(polypoints[len(polypoints)-1])
@@ -238,18 +245,19 @@ class POMDPEnvironmentConverter():
             States.append( Polygon([triangle.coords[2],line1.getPoint(float(-1)/self.Resolution),line2.getPoint(float(-1)/self.Resolution) ]))
             #then all the filling which is always a quadrilateral
             for i in range(1,self.Resolution-1): #create all quadrilaterals between the first and last one.
-                point1 = line1.getPoint(float(-(1+1)) / self.Resolution)
-                point2 = line2.getPoint(float(-(i+1))/self.Resolution)
-                point3 = line1.getPoint(float(-(i+2))/self.Resolution)
-                point4 = line2.getPoint(float(-(i+2))/self.Resolution)
+                point1 = line1.getPoint(float(-(i))/self.Resolution)
+                point2 = line2.getPoint(float(-(i))/self.Resolution)
+                point4 = line1.getPoint(float(-(i+1))/self.Resolution)
+                point3 = line2.getPoint(float(-(i+1))/self.Resolution)
                 shape = Polygon([point1,point2,point3,point4])
+                print shape.coords
                 States.append(shape)
                 #print "added a meat quad."
             #the last quadrilateral
             point1 = line1.getPoint(float(-(self.Resolution-1))/self.Resolution)
             point2 = line2.getPoint(float(-(self.Resolution-1))/self.Resolution)
-            point3 = triangle.coords[0]
-            point4 = triangle.coords[1]
+            point4 = triangle.coords[0]
+            point3 = triangle.coords[1]
             States.append( Polygon([point1,point2,point3,point4]))
             
         return States
