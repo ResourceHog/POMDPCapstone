@@ -1,10 +1,9 @@
 import random
-import math
 import numpy as np
-from Environment4x1 import Environment4x1
-from agent import Agent
+import math
+from Interfaces import Agent
 #from planner import RoutePlanner
-from simulator import Simulator
+
 from PomdpenvironmentConverter import POMDPEnvironmentConverter
 import copy
 
@@ -26,7 +25,7 @@ class LearningAgent(Agent):
         self.epsilon = epsilon   # Random exploration factor
         self.alpha = alpha       # Learning factor
         self.T = 1
-        self.weight = 0.00001
+        self.weight = 0.0005
         self.color = 'green'
         ###########
         ## TO DO ##
@@ -53,20 +52,20 @@ class LearningAgent(Agent):
         
         
         
-        self.epsilon = self.epsilon - 0.05
+        #self.epsilon = self.epsilon - 0.05
         self.environmentmodel.reset()
         
         
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
-        #else:
+        else:
             #This is an adjusted sigmoid function
-       #     threshold = 0.0004
-       #     smallnum = 0.00001
-       #     adjustment = (math.log(threshold)/(math.log(smallnum)*self.weight))
+            threshold = 0.0004
+            smallnum = 0.00001
+            adjustment = (math.log(threshold)/(math.log(smallnum)*self.weight))
 
-       #     self.epsilon = 1 / (1 + smallnum**(-self.weight*(self.T-adjustment)))
+            self.epsilon = 1 / (1 + smallnum**(-self.weight*(self.T-adjustment)))
             #end sigmoid
             
             
@@ -87,7 +86,7 @@ class LearningAgent(Agent):
         #waypoint = self.planner.next_waypoint() # The next waypoint 
         inputs = self.environmentmodel.getState()           # Visual input - intersection light and traffic
         #deadline = self.env.get_deadline(self)  # Remaining deadline
-        print inputs
+        #print inputs
         ########### 
         ## TO DO ##
         ###########
@@ -131,11 +130,11 @@ class LearningAgent(Agent):
             self.Q[state][action] = 0.0
         
             
-
         return
 
 
     def choose_action(self, state):
+
         """ The choose_action function is called when the agent is asked to choose
             which action to take, based on the 'state' the smartcab is in. """
 
@@ -173,7 +172,7 @@ class LearningAgent(Agent):
             chosenaction = random.randint(0,posibilities)
             action = highqactions[chosenaction]
             
-        print action
+        #print action
             
             
         return action
@@ -212,48 +211,3 @@ class LearningAgent(Agent):
         return
         
 
-def run():
-    """ Driving function for running the simulation. 
-        Press ESC to close the simulation, or [SPACE] to pause the simulation. """
-
-    ##############
-    # Create the environment
-    # Flags:
-    #   verbose     - set to True to display additional output from the simulation
-    #   num_dummies - discrete number of dummy agents in the environment, default is 100
-    #   grid_size   - discrete number of intersections (columns, rows), default is (8, 6)
-    env = Environment4x1()
-    
-    ##############
-    # Create the driving agent
-    # Flags:
-    #   learning   - set to True to force the driving agent to use Q-learning
-    #    * epsilon - continuous value for the exploration factor, default is 1
-    #    * alpha - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent,learning = True, epsilon = 0.9999, alpha=0.3,resolution=4)
-    
-    ##############
-    # Follow the driving agent
-    # Flags:
-    #   enforce_deadline - set to True to enforce a deadline metric
-    env.set_primary_agent(agent)
-
-    ##############
-    # Create the simulation
-    # Flags:
-    #   update_delay - continuous time (in seconds) between actions, default is 2.0 seconds
-    #   display      - set to False to disable the GUI if PyGame is enabled
-    #   log_metrics  - set to True to log trial and simulation results to /logs
-    #   optimized    - set to True to change the default log file name
-    sim = Simulator(env,update_delay = 0.3,log_metrics=True    ,optimized=False)
-    
-    ##############
-    # Run the simulator
-    # Flags:
-    #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
-    #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test = 10)
-
-
-if __name__ == '__main__':
-    run()

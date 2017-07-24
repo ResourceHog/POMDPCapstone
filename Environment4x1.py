@@ -28,7 +28,7 @@ class Environment4x1(object):
         self.done = False
         self.primary_agent = None
         self.step_data = {}
-        self.success = False
+        self.success = 0
         self.TIMELIMIT = 10
         self.timelapsed = 0
         
@@ -62,7 +62,7 @@ class Environment4x1(object):
         self.trial_data['age'] += 1
         self.timelapsed += 1
         if self.agent_states[self.primary_agent]['location'] == 2:
-            self.success = True
+            self.success = 1
             self.trial_data['success'] = self.success
             self.done = True
         else:
@@ -96,11 +96,13 @@ class Environment4x1(object):
         return answer
     
     def administerReward(self):
+        reward = 0.0
         if self.agent_states[self.primary_agent]['location'] == 2:
-            self.trial_data['net_reward'] += 1
-            return  1
+            reward =  1.0
         else:
-            return -0.05
+            reward =  -0.05
+        self.trial_data['net_reward'] += reward
+        return reward
     
     def act(self,action):
         pcloud = self.Transition(self.agent_states[self.primary_agent]['location'],action)    #gets all the states and their probability of becoming the next state where the probability is greater than 0.
@@ -136,9 +138,7 @@ class Environment4x1(object):
         
         
     def randomlocation(self):
-        location = Random.randrange(0,4)
-        while location == 2:
-            location = Random.randrange(0,4)
+        location = Random.choice([0,1,3])
         return location
     
     def reset(self,testing):
@@ -147,7 +147,7 @@ class Environment4x1(object):
         print "New Starting location is {}".format(location)
         self.agent_states[self.primary_agent]['location'] = location
         self.reward = 0
-        self.success = False
+        self.success = 0
         self.done = False
         self.timelapsed = 0
         

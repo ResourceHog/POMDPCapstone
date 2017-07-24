@@ -87,6 +87,7 @@ class POMDPEnvironmentConverter():
         if sumofbeliefs != 1:
             print "uh oh invalid belief"
         else:
+            pass
             print "VALID BELIEF"
         print newBelief
         self.currentBelief = newBelief
@@ -118,7 +119,7 @@ class POMDPEnvironmentConverter():
             sum1 = sum1 * sumofT
             denominator = denominator + sum1
         answer = numerator/denominator
-        print "The Probability of being in state {} after Observing {} after taking action {} when the previous prob was {} is {}".format(state,Observation, Action,previousBelief[state],answer)
+        #print "The Probability of being in state {} after Observing {} after taking action {} when the previous prob was {} is {}".format(state,Observation, Action,previousBelief[state],answer)
         return answer
     #checks the model of the environment for a probability distribution of states it could enter.
     def ETransition(self,preState, Action, postState):
@@ -140,13 +141,10 @@ class POMDPEnvironmentConverter():
         
     
     def generateMDPfromPOMDP(self, States):
-        maximumUncertainty = float(1)/States
         #number of points is the number of states*(Resolution+1)
         PointVectors = []
         #Center of the two dimentional polygon this represents the point at which any state is equally likely.
         centroid = [0,0]
-        #number of lines in the polygon.
-        PrimaryPolygon = []
         
         for vector in range(0,States):#create a vector representation for each state.
             coordinate = []
@@ -158,15 +156,8 @@ class POMDPEnvironmentConverter():
             coordinate = self.translateNDpointto2D(coordinate)
             PointVectors.append(coordinate)
     
-        #PrimaryPolygon = self.getPolygonFrom(PointVectors) #this is the space that contains the entire co-MDP
-        #for vectorline in PrimaryPolygon:
-        #    print vectorline.vector1
-        #    print vectorline.vector2
         polypoints = self.getPolypoints(PointVectors) #this splits each line in the polygon into a number of line segments eqaul to the resolution
         triangles =  self.getTriangles(polypoints,centroid) #this takes the line segments and creates a triangle by adding a centroid to each segment.
-        for triangle in triangles:
-            print " ____ "
-            print triangle.coords
         #at this point it should be a co-mdp. This next line then turns this space of infinite states into a finite space.                              
         ApproximatePOMDP = self.getBaseStates(triangles) #this splits each trangle into a number of polygons eqaul to resolution. Each of these polygons represents a State the Agent can be in.
         
@@ -250,7 +241,7 @@ class POMDPEnvironmentConverter():
                 point4 = line1.getPoint(float(-(i+1))/self.Resolution)
                 point3 = line2.getPoint(float(-(i+1))/self.Resolution)
                 shape = Polygon([point1,point2,point3,point4])
-                print shape.coords
+                #print shape.coords
                 States.append(shape)
                 #print "added a meat quad."
             #the last quadrilateral

@@ -42,7 +42,7 @@ def calculate_safety(data):
 
 def calculate_reliability(data):
 	""" Calculates the reliability rating of the smartcab during testing. """
-
+    
 	success_ratio = data['success'].sum() * 1.0 / len(data)
 
 	if success_ratio == 1: # Always meets deadline
@@ -75,11 +75,14 @@ def plot_trials(csv):
 	data['reliability_rate'] = (data['success']*100).rolling(window=10, center=False).mean()  # compute avg. net reward with window=10
 	data['epsilon'] = data['parameters'].apply(lambda x: ast.literal_eval(x)['e']) 
 	data['alpha'] = data['parameters'].apply(lambda x: ast.literal_eval(x)['a']) 
-
-
+    
+    
+    
 	# Create training and testing subsets
 	training_data = data[data['testing'] == False]
 	testing_data = data[data['testing'] == True]
+    
+        #print data['reliability_rate']
 
 	plt.figure(figsize=(12,8))
      
@@ -112,7 +115,7 @@ def plot_trials(csv):
 	ax = plt.subplot2grid((6,6), (2,3), colspan=3, rowspan=2)
 
 	# Check whether the agent was expected to learn
-	if csv != 'sim_no-learning.csv':
+	if csv != 'sim_no-learning.csv' and csv != 'qsim_no-learning.csv' and csv != 'tigersim_no-learning.csv' and csv != 'qtigersim_no-learning.csv':
 		ax.set_ylabel("Parameter Value")
 		ax.set_xlabel("Trial Number")
 		ax.set_xlim((1, len(training_data)))
@@ -168,9 +171,9 @@ def plot_trials(csv):
 		reliability_rating, reliability_color = calculate_reliability(testing_data)
 
 		# Write success rate
-		ax.text(0.40, .9, "{} testing trials simulated.".format(len(testing_data)), fontsize=14, ha='center')
-		ax.text(0.40, 0.7, "Safety Rating:", fontsize=16, ha='center')
-		ax.text(0.40, 0.42, "{}".format(safety_rating), fontsize=40, ha='center', color=safety_color)
+		#ax.text(0.40, .9, "{} testing trials simulated.".format(len(testing_data)), fontsize=14, ha='center')
+		#ax.text(0.40, 0.7, "Safety Rating:", fontsize=16, ha='center')
+		#ax.text(0.40, 0.42, "{}".format(safety_rating), fontsize=40, ha='center', color=safety_color)
 		ax.text(0.40, 0.27, "Reliability Rating:", fontsize=16, ha='center')
 		ax.text(0.40, 0, "{}".format(reliability_rating), fontsize=40, ha='center', color=reliability_color)
 

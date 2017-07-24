@@ -18,7 +18,7 @@ import random
 import importlib
 import csv
 
-class Simulator(object):
+class Simulator4x1(object):
     """Simulates agents in a dynamic smartcab environment.
 
     Uses PyGame to display GUI, if available.
@@ -41,8 +41,9 @@ class Simulator(object):
         'gray'    : (155, 155, 155)
     }
 
-    def __init__(self, env, size=None, update_delay=2.0, display=True, log_metrics=False, optimized=False):
+    def __init__(self, env, size=None, update_delay=2.0, display=True, log_metrics=False, optimized=False,vanilla=False):
         self.env = env
+        self.vanilla = vanilla
         self.blocksize = 100
         self.size = size if size is not None else (4 * self.blocksize,int(2.2*self.blocksize))
         self.width, self.height = self.size
@@ -87,18 +88,32 @@ class Simulator(object):
             a = self.env.primary_agent
 
             # Set log files
-            if a.learning:
-                if self.optimized: # Whether the user is optimizing the parameters and decay functions
-                    self.log_filename = os.path.join("logs", "sim_improved-learning.csv")
-                    self.table_filename = os.path.join("logs","sim_improved-learning.txt")
-                else: 
-                    self.log_filename = os.path.join("logs", "sim_default-learning.csv")
-                    self.table_filename = os.path.join("logs","sim_default-learning.txt")
+            if vanilla:
+                
+                if a.learning:
+                    if self.optimized: # Whether the user is optimizing the parameters and decay functions
+                        self.log_filename = os.path.join("logs", "qsim_improved-learning.csv")
+                        self.table_filename = os.path.join("logs","qsim_improved-learning.txt")
+                    else: 
+                        self.log_filename = os.path.join("logs", "qsim_default-learning.csv")
+                        self.table_filename = os.path.join("logs","qsim_default-learning.txt")
 
-                self.table_file = open(self.table_filename, 'wb')
+                    self.table_file = open(self.table_filename, 'wb')
+                else:
+                    self.log_filename = os.path.join("logs", "qsim_no-learning.csv")
             else:
-                self.log_filename = os.path.join("logs", "sim_no-learning.csv")
-            
+                if a.learning:
+                    if self.optimized: # Whether the user is optimizing the parameters and decay functions
+                        self.log_filename = os.path.join("logs", "sim_improved-learning.csv")
+                        self.table_filename = os.path.join("logs","sim_improved-learning.txt")
+                    else: 
+                        self.log_filename = os.path.join("logs", "sim_default-learning.csv")
+                        self.table_filename = os.path.join("logs","sim_default-learning.txt")
+
+                    self.table_file = open(self.table_filename, 'wb')
+                else:
+                    self.log_filename = os.path.join("logs", "sim_no-learning.csv")
+                
             self.log_fields = ['trial', 'testing', 'parameters',  'net_reward', 'age', 'success']
             self.log_file = open(self.log_filename, 'wb')
             self.log_writer = csv.DictWriter(self.log_file, fieldnames=self.log_fields)
@@ -276,6 +291,8 @@ class Simulator(object):
                 print "Agent not set to learn."
 
     def renderMindState(self, xadjustment,yadjustment):
+        if self.vanilla:
+            return
         currentState = self.env.primary_agent.environmentmodel.getState()
         magnification = 50
         beliefstate = self.env.primary_agent.environmentmodel.currentBelief

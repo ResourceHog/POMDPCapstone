@@ -1,9 +1,9 @@
 import random
 import math
 import numpy as np
-from environment import Agent, Environment
+from Interfaces import Agent
 from planner import RoutePlanner
-from simulator import Simulator
+
 
 
 class LearningAgent(Agent):
@@ -21,7 +21,7 @@ class LearningAgent(Agent):
         self.epsilon = epsilon   # Random exploration factor
         self.alpha = alpha       # Learning factor
         self.T = 1
-        self.weight = 0.0001
+        self.weight = 0.0005
         ###########
         ## TO DO ##
         ###########
@@ -42,8 +42,8 @@ class LearningAgent(Agent):
         # Update epsilon using a decay function of your choice
         # Update additional class parameters as needed
         # If 'testing' is True, set epsilon and alpha to 0
-        self.epsilon = math.cos(self.T*self.alpha)
-        self.epsilon = self.alpha**self.T
+        #self.epsilon = math.cos(self.T*self.alpha)
+        #self.epsilon = self.alpha**self.T
         
         
         
@@ -54,13 +54,13 @@ class LearningAgent(Agent):
         if testing:
             self.epsilon = 0.0
             self.alpha = 0.0
-        #else:
+        else:
             #This is an adjusted sigmoid function
-       #     threshold = 0.0004
-       #     smallnum = 0.00001
-       #     adjustment = (math.log(threshold)/(math.log(smallnum)*self.weight))
+            threshold = 0.0004
+            smallnum = 0.00001
+            adjustment = (math.log(threshold)/(math.log(smallnum)*self.weight))
 
-       #     self.epsilon = 1 / (1 + smallnum**(-self.weight*(self.T-adjustment)))
+            self.epsilon = 1 / (1 + smallnum**(-self.weight*(self.T-adjustment)))
             #end sigmoid
             
             
@@ -74,15 +74,15 @@ class LearningAgent(Agent):
             are all features available to the agent. """
 
         # Collect data about the environment
-        waypoint = self.planner.next_waypoint() # The next waypoint 
-        inputs = self.env.sense(self)           # Visual input - intersection light and traffic
-        deadline = self.env.get_deadline(self)  # Remaining deadline
-        print inputs
+#        waypoint = self.planner.next_waypoint() # The next waypoint 
+        inputs = self.env.sense()           # Visual input - intersection light and traffic
+#        deadline = self.env.get_deadline(self)  # Remaining deadline
+        #print inputs
         ########### 
         ## TO DO ##
         ###########
         # Set 'state' as a tuple of relevant data for the agent        
-        state = (waypoint, inputs['light'],inputs['left'],inputs['right'],inputs['oncoming'])
+        state = inputs
 
         return state
 
@@ -95,7 +95,7 @@ class LearningAgent(Agent):
         ## TO DO ##
         ###########
         # Calculate the maximum Q-value of all actions for a given state
-        value = self.Q[state][None]
+        value = self.Q[state][self.Q[state].keys()[0]]
         for action in self.Q[state]:
             if value <= self.Q[state][action]:
                 value = self.Q[state][action]
@@ -112,8 +112,6 @@ class LearningAgent(Agent):
         # When learning, check if the 'state' is not in the Q-table
         # If it is not, create a new dictionary for that state
         #   Then, for each action available, set the initial Q-value to 0.0
-        if(not self.learning):
-            return
         if(state in self.Q):
             return
         
@@ -132,7 +130,7 @@ class LearningAgent(Agent):
 
         # Set the agent state and default action
         self.state = state
-        self.next_waypoint = self.planner.next_waypoint()
+        #self.next_waypoint = self.planner.next_waypoint()
         
         #DriveActions = ['left','right','forward',None]
         action = None
@@ -164,7 +162,7 @@ class LearningAgent(Agent):
             chosenaction = random.randint(0,posibilities)
             action = highqactions[chosenaction]
             
-            print action
+            #print action
             
             
         return action
@@ -199,54 +197,10 @@ class LearningAgent(Agent):
         state = self.build_state()          # Get current state
         self.createQ(state)                 # Create 'state' in Q-table
         action = self.choose_action(state)  # Choose an action
-        reward = self.env.act(self, action) # Receive a reward
+        reward = self.env.act( action) # Receive a reward
         self.learn(state, action, reward)   # Q-learn
 
         return
         
 
-def run():
-    """ Driving function for running the simulation. 
-        Press ESC to close the simulation, or [SPACE] to pause the simulation. """
 
-    ##############
-    # Create the environment
-    # Flags:
-    #   verbose     - set to True to display additional output from the simulation
-    #   num_dummies - discrete number of dummy agents in the environment, default is 100
-    #   grid_size   - discrete number of intersections (columns, rows), default is (8, 6)
-    env = Environment()
-    
-    ##############
-    # Create the driving agent
-    # Flags:
-    #   learning   - set to True to force the driving agent to use Q-learning
-    #    * epsilon - continuous value for the exploration factor, default is 1
-    #    * alpha - continuous value for the learning rate, default is 0.5
-    agent = env.create_agent(LearningAgent,learning = True, epsilon = 0.9999, alpha=0.3)
-    
-    ##############
-    # Follow the driving agent
-    # Flags:
-    #   enforce_deadline - set to True to enforce a deadline metric
-    env.set_primary_agent(agent)
-
-    ##############
-    # Create the simulation
-    # Flags:
-    #   update_delay - continuous time (in seconds) between actions, default is 2.0 seconds
-    #   display      - set to False to disable the GUI if PyGame is enabled
-    #   log_metrics  - set to True to log trial and simulation results to /logs
-    #   optimized    - set to True to change the default log file name
-    sim = Simulator(env,update_delay = 0.001,log_metrics = True,optimized=False)
-    
-    ##############
-    # Run the simulator
-    # Flags:
-    #   tolerance  - epsilon tolerance before beginning testing, default is 0.05 
-    #   n_test     - discrete number of testing trials to perform, default is 0
-    sim.run(n_test = 10)
-
-
-if __name__ == '__main__':
-    run()

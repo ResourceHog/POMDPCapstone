@@ -1,0 +1,25 @@
+/-----------------------------------------
+| State-action rewards from modified Q-Learning
+\-----------------------------------------
+
+right
+ -- down : -0.05
+ -- listen : -0.05
+ -- right : -0.05
+ -- up : -0.05
+ -- left : -0.05
+
+silence
+ -- down : -0.05
+ -- listen : -0.05
+ -- right : 0.45
+ -- up : -0.05
+ -- left : -0.05
+
+left
+ -- down : -0.05
+ -- listen : -0.05
+ -- right : -0.05
+ -- up : -0.05
+ -- left : -0.05
+

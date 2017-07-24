@@ -1,0 +1,95 @@
+/-----------------------------------------
+| State-action rewards from modified Q-Learning
+\-----------------------------------------
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BB59408>
+ -- down : 0.00
+ -- listen : -0.01
+ -- right : -0.01
+ -- up : 0.00
+ -- left : 0.00
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BC6CE08>
+ -- down : -0.03
+ -- listen : -0.01
+ -- right : -0.01
+ -- up : -0.03
+ -- left : -0.03
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BA29888>
+ -- down : -0.01
+ -- listen : -0.01
+ -- right : 0.00
+ -- up : 0.00
+ -- left : -0.01
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCE1248>
+ -- down : -0.04
+ -- listen : -0.05
+ -- right : -0.04
+ -- up : -0.04
+ -- left : -0.04
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCFA488>
+ -- down : -0.03
+ -- listen : -0.01
+ -- right : 0.20
+ -- up : -0.03
+ -- left : 0.61
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCF5CC8>
+ -- down : -0.01
+ -- listen : 0.00
+ -- right : 0.44
+ -- up : 0.00
+ -- left : 0.00
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCFACC8>
+ -- down : -0.04
+ -- listen : -0.04
+ -- right : -0.04
+ -- up : -0.04
+ -- left : -0.04
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCE9708>
+ -- down : -0.03
+ -- listen : -0.01
+ -- right : -0.01
+ -- up : 0.00
+ -- left : 0.00
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BA01288>
+ -- down : 0.00
+ -- listen : -0.01
+ -- right : 0.00
+ -- up : 0.00
+ -- left : 0.30
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCF88C8>
+ -- down : -0.03
+ -- listen : -0.03
+ -- right : -0.03
+ -- up : -0.01
+ -- left : -0.01
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BA01948>
+ -- down : -0.01
+ -- listen : -0.01
+ -- right : 0.20
+ -- up : -0.01
+ -- left : 0.00
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCE4388>
+ -- down : -0.01
+ -- listen : -0.01
+ -- right : -0.01
+ -- up : 0.00
+ -- left : 0.00
+
+<PomdpenvironmentConverter.Polygon instance at 0x000000000BCFA848>
+ -- down : -0.04
+ -- listen : -0.04
+ -- right : -0.04
+ -- up : -0.04
+ -- left : -0.04
+
