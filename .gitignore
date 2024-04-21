@@ -1,1 +1,5 @@
 /venv
+*.pyc
+*.pyo
+*/sim_default-learning.csv
+*/sim_default-learning.txt
