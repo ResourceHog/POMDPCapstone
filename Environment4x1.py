@@ -6,10 +6,11 @@ Created on Fri Apr 21 14:21:46 2017
 """
 from collections import OrderedDict
 import random as Random
+import copy
 
 
 class uniqueState(object):
-    def __init__(self,statetype):
+    def __init__(self,statetype :str):
         self.statetype = statetype
 
 
@@ -18,9 +19,9 @@ class Environment4x1(object):
     def __init__(self):
         self.valid_actions = ['left', 'right']
         self.valid_observables = ['blue', 'green']
-        self.states = OrderedDict()
-        self.valid_inputs = {'state': self.states.keys()}
-        self.agent_states = OrderedDict()
+        self.states = dict()
+        self.valid_inputs = {'state': list(self.states.keys())}
+        self.agent_states = dict()
         self.states[0] = uniqueState(self.valid_observables[0]) #blue state
         self.states[1] = uniqueState(self.valid_observables[0]) #blue state
         self.states[2] = uniqueState(self.valid_observables[1]) #green state
@@ -31,6 +32,7 @@ class Environment4x1(object):
         self.success = 0
         self.TIMELIMIT = 10
         self.timelapsed = 0
+
         
         self.trial_data = {
             'testing': False, # if the trial is for testing a learned policy
@@ -38,6 +40,23 @@ class Environment4x1(object):
             'success': 0,  # whether the agent reached the destination in time
             'age' : 0
         }
+
+    @classmethod
+    def copy(cls,env):
+        newenv = cls()
+        newenv.valid_actions = copy.copy(env.valid_actions)
+        newenv.valid_observables = copy.deepcopy(env.valid_observables)
+        newenv.states = copy.deepcopy(env.states)
+        newenv.valid_inputs = copy.copy(env.valid_inputs)
+        newenv.agent_states = copy.copy(env.agent_states)
+        newenv.done = copy.deepcopy(env.done)
+        newenv.primary_agent = copy.deepcopy(env.primary_agent)
+        newenv.step_data = copy.deepcopy(env.step_data)
+        newenv.success = copy.deepcopy(env.success)
+        newenv.TIMELIMIT = copy.deepcopy(env.TIMELIMIT)
+        newenv.timelapsed = copy.deepcopy(env.timelapsed)
+        newenv.trial_data = copy.deepcopy(env.trial_data)
+        return newenv
         
         
     def getStates(self):
@@ -58,7 +77,7 @@ class Environment4x1(object):
         self.primary_agent.update() #this is the correct place to put this. It feels weird that the existence of the agents update function causes time to progress.
                                     #I think this weirdness comes from the fact that it is not a "physical" agent. (It's not a computer emedded inside the environment that runs the code.)
                                     #what I mean is that the rules of the environment are not the same rules that govern the execution of its code.
-        print "agent is in state {}".format(self.agent_states[self.primary_agent]['location'])
+        print("agent is in state {}".format(self.agent_states[self.primary_agent]['location']))
         self.trial_data['age'] += 1
         self.timelapsed += 1
         if self.agent_states[self.primary_agent]['location'] == 2:
@@ -75,7 +94,7 @@ class Environment4x1(object):
         answer = OrderedDict()
         location = preState
         #print "in environment transition states are {}".format(self.states.keys())
-        for state in self.states.keys():
+        for state in list(self.states.keys()):
             if state == -1:
          #       print "what have we here {}".format(self.states.keys())
                 pass
@@ -124,11 +143,12 @@ class Environment4x1(object):
             
         
     
-    def create_agent(self,agentclass,*args, **kwargs):
-        agent = agentclass(self,*args, **kwargs)
-        print "when creating an agent the states are {}".format(self.states.keys())
-        self.agent_states[agent] = {'location': Random.choice(self.states.keys())}
-        print "print assigned agent to location: " + str(self.agent_states[agent]['location'])
+    def create_agent(self,agent_class,*args, **kwargs):
+        agent = agent_class(self, Environment4x1, *args, **kwargs)
+        keys = list(self.states.keys())
+        print("when creating an agent the states are {}".format(keys))
+        self.agent_states[agent] = {'location': Random.choice(keys)}
+        print("print assigned agent to location: " + str(self.agent_states[agent]['location']))
         return agent
     
     def set_primary_agent(self,agent):
@@ -144,7 +164,7 @@ class Environment4x1(object):
     def reset(self,testing):
         self.primary_agent.reset(testing)
         location = self.randomlocation()
-        print "New Starting location is {}".format(location)
+        print("New Starting location is {}".format(location))
         self.agent_states[self.primary_agent]['location'] = location
         self.reward = 0
         self.success = 0

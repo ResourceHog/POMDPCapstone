@@ -13,9 +13,9 @@ class uniqueState(object):
         self.statetype = statetype
         self.nodes = OrderedDict()
     def attachnode(self, action,state,probability):
-        if action not in self.nodes.keys():
+        if action not in list(self.nodes.keys()):
             self.nodes[action] = OrderedDict()
-        if state not in self.nodes[action].keys():
+        if state not in list(self.nodes[action].keys()):
             self.nodes[action][state] = OrderedDict()          
         self.nodes[action][state] = probability
 
@@ -26,7 +26,7 @@ class EnvironmentTiger(object):
         self.valid_actions = ['left', 'right','up','down','listen']
         self.valid_observables = ['left', 'right','silence','tiger']
         self.states = OrderedDict()
-        self.valid_inputs = {'state': self.states.keys()}
+        self.valid_inputs = {'state': list(self.states.keys())}
         self.agent_states = OrderedDict()
         
         
@@ -152,7 +152,7 @@ class EnvironmentTiger(object):
         self.primary_agent.update() #this is the correct place to put this. It feels weird that the existence of the agents update function causes time to progress.
                                     #I think this weirdness comes from the fact that it is not a "physical" agent. (It's not a computer emedded inside the environment that runs the code.)
                                     #what I mean is that the rules of the environment are not the same rules that govern the execution of its code.
-        print "agent is in state {}".format(self.agent_states[self.primary_agent]['location'])
+        print("agent is in state {}".format(self.agent_states[self.primary_agent]['location']))
         self.trial_data['age'] += 1
         self.timelapsed += 1
         
@@ -203,9 +203,9 @@ class EnvironmentTiger(object):
     
     def create_agent(self,agentclass,*args, **kwargs):
         agent = agentclass(self,*args, **kwargs)
-        print "when creating an agent the states are {}".format(self.states.keys())
-        self.agent_states[agent] = {'location': Random.choice(self.states.keys())}
-        print "print assigned agent to location: " + str(self.agent_states[agent]['location'])
+        print("when creating an agent the states are {}".format(list(self.states.keys())))
+        self.agent_states[agent] = {'location': Random.choice(list(self.states.keys()))}
+        print("print assigned agent to location: " + str(self.agent_states[agent]['location']))
         return agent
     
     def set_primary_agent(self,agent):
@@ -226,7 +226,7 @@ class EnvironmentTiger(object):
     def reset(self,testing):
         self.primary_agent.reset(testing)
         location = self.randomlocation()
-        print "New Starting location is {}".format(location)
+        print("New Starting location is {}".format(location))
         self.agent_states[self.primary_agent]['location'] = location
         self.reward = 0
         self.success = 0

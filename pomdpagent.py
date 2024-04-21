@@ -13,12 +13,14 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.5, resolution = 4):
+    def __init__(self, env, environment_type, learning=False, epsilon=1.0, alpha=0.5, resolution = 4, ):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         #self.planner = RoutePlanner(self.env, self)  # Create a route planner
         self.valid_actions = self.env.valid_actions  # The set of valid actions
 
-        self.environmentmodel = POMDPEnvironmentConverter(copy.deepcopy(env),resolution) #the converter needs a model of the environment to make a few calculations.
+        environment_copy = environment_type.copy(env)
+
+        self.environmentmodel = POMDPEnvironmentConverter(environment_copy,resolution) #the converter needs a model of the environment to make a few calculations.
                                 # Set parameters of the learning agent
         self.learning = learning # Whether the agent is expected to learn
         self.Q = dict()          # Create a Q-table which will be a dictionary of tuples

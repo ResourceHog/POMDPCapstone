@@ -35,7 +35,6 @@ def run():
     wepsilon = 0.9999
     walpha = 0.3
     wresolution = 4
-    
     #agent = env.create_agent(LearningAgent,learning = isLearning, epsilon = wepsilon, alpha=walpha,resolution=wresolution)
     agent4x1 = fourby1env.create_agent(LearningAgent, learning = isLearning, epsilon = wepsilon,alpha = walpha,resolution=wresolution)
     ##############
@@ -67,12 +66,12 @@ def run():
     
     
     
-    print "starting second sim"
+    print("starting second sim")
     sim4x1 = Simulator4x1(fourby1env,update_delay = delay,log_metrics=isLogging    ,optimized=isOptimised)
     sim4x1.run(n_test = 50)
     
     
-    print "starting control."
+    print("starting control.")
     #agent = env.create_agent(Qlearner,learning = isLearning, epsilon = wepsilon, alpha=walpha)
     agent4x1 = fourby1env.create_agent(Qlearner,learning = isLearning, epsilon = wepsilon, alpha = walpha)
     #sim = env.set_primary_agent(agent)
@@ -82,7 +81,7 @@ def run():
     
     
     
-    print "starting second sim"
+    print("starting second sim")
     sim4x1 = Simulator4x1(fourby1env,update_delay = delay,log_metrics=isLogging    ,optimized=isOptimised,vanilla = True)
     sim4x1.run(n_test = 50)    
 

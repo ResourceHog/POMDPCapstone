@@ -14,9 +14,9 @@ class vectorLine():
         self.vector2 = vector2
         
     def getPoint(self,point):
-        print self.vector1
-        print self.vector2
-        print " ___"
+        print(self.vector1)
+        print(self.vector2)
+        print(" ___")
         y = np.subtract(self.vector1,self.vector2)
         y = np.multiply(y,point)
         y = np.add(y,self.vector1)
@@ -88,8 +88,8 @@ def getTriangles(polypoints,centroid): #if the implementation of this changes it
 def getBaseStates(triangles,resolution):#current implementation assumes that triangles are in a certain format. But the adherants of this format isn't gauranteed.
     States = []
     for triangle in triangles: #format assumed is [x1,x2,centroid] for all triangles
-        print "error?"
-        print triangle[2]
+        print("error?")
+        print(triangle[2])
         line1 = vectorLine(triangle[2],triangle[0])
         line2 = vectorLine(triangle[2],triangle[1])
         States.append( [triangle[2],line1.getPoint(1/resolution),line2.getPoint(1/resolution) ])
@@ -154,7 +154,7 @@ def getArea(polygon):
 
 
 test = generateMDPfromPOMDP(4,3)
-print test
+print(test)
     
     
     

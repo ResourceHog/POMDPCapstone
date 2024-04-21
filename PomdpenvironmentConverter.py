@@ -85,11 +85,11 @@ class POMDPEnvironmentConverter():
         for belief in newBelief:
             sumofbeliefs += belief
         if sumofbeliefs != 1:
-            print "uh oh invalid belief"
+            print("uh oh invalid belief")
         else:
             pass
-            print "VALID BELIEF"
-        print newBelief
+            print("VALID BELIEF")
+        print(newBelief)
         self.currentBelief = newBelief
         return newBelief
     def reset(self):
@@ -102,7 +102,7 @@ class POMDPEnvironmentConverter():
     def StateEstimator(self,state,Action,Observation,previousBelief):
         numerator = self.Observation(state,Observation)
         sumofT = 0.0
-        for s in self.States.keys():
+        for s in list(self.States.keys()):
             sumofT += self.ETransition(s,Action,state) * previousBelief[s] # times the estimated probability of this state in the previous belief... also this will fail.
         numerator = numerator * sumofT
         if state == 2 and Action == 'right' and Observation == 'green':
@@ -114,7 +114,7 @@ class POMDPEnvironmentConverter():
         for s1 in self.States:
             sum1 = self.Observation(s1,Observation)
             sumofT = 0.0
-            for s in self.States.keys():
+            for s in list(self.States.keys()):
                 sumofT += self.ETransition(s,Action,s1) * previousBelief[s] # times the estimated probability of this state in the previous belief... also this will fail.
             sum1 = sum1 * sumofT
             denominator = denominator + sum1

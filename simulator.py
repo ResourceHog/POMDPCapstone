@@ -76,10 +76,10 @@ class Simulator4x1(object):
                 self.paused = False
             except ImportError as e:
                 self.display = False
-                print "Simulator.__init__(): Unable to import pygame; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+                print("Simulator.__init__(): Unable to import pygame; display disabled.\n{}: {}".format(e.__class__.__name__, e))
             except Exception as e:
                 self.display = False
-                print "Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e)
+                print("Simulator.__init__(): Error initializing GUI objects; display disabled.\n{}: {}".format(e.__class__.__name__, e))
 
         # Setup metrics to report
         self.log_metrics = log_metrics
@@ -98,7 +98,7 @@ class Simulator4x1(object):
                         self.log_filename = os.path.join("logs", "qsim_default-learning.csv")
                         self.table_filename = os.path.join("logs","qsim_default-learning.txt")
 
-                    self.table_file = open(self.table_filename, 'wb')
+                    self.table_file = open(self.table_filename, 'w')
                 else:
                     self.log_filename = os.path.join("logs", "qsim_no-learning.csv")
             else:
@@ -110,12 +110,12 @@ class Simulator4x1(object):
                         self.log_filename = os.path.join("logs", "sim_default-learning.csv")
                         self.table_filename = os.path.join("logs","sim_default-learning.txt")
 
-                    self.table_file = open(self.table_filename, 'wb')
+                    self.table_file = open(self.table_filename, 'w')
                 else:
                     self.log_filename = os.path.join("logs", "sim_no-learning.csv")
                 
             self.log_fields = ['trial', 'testing', 'parameters',  'net_reward', 'age', 'success']
-            self.log_file = open(self.log_filename, 'wb')
+            self.log_file = open(self.log_filename, 'w')
             self.log_writer = csv.DictWriter(self.log_file, fieldnames=self.log_fields)
             self.log_writer.writeheader()
 
@@ -142,8 +142,8 @@ class Simulator4x1(object):
             if not testing:
                 if total_trials > 20: # Must complete minimum 20 training trials
                     if a.learning:
-                        print "epsilon = {}".format(a.epsilon)
-                        print "tolerance = {}".format(tolerance)
+                        print("epsilon = {}".format(a.epsilon))
+                        print("tolerance = {}".format(tolerance))
                         if a.epsilon < tolerance: # assumes epsilon decays to 0
                             testing = True
                             trial = 1
@@ -159,15 +159,15 @@ class Simulator4x1(object):
 
 
             # Pretty print to terminal
-            print 
-            print "/-------------------------"
+            print()
+            print("/-------------------------")
             if testing:
-                print "| Testing trial {}".format(trial)
+                print("| Testing trial {}".format(trial))
             else:
-                print "| Training trial {}".format(trial)
+                print("| Training trial {}".format(trial))
 
-            print "\-------------------------"
-            print 
+            print("\-------------------------")
+            print() 
 
             self.env.reset(testing)
             self.current_time = 0.0
@@ -227,11 +227,11 @@ class Simulator4x1(object):
 
             # Trial finished
             if self.env.success == True:
-                print "\nTrial Completed!"
-                print "Agent reached the destination."
+                print("\nTrial Completed!")
+                print("Agent reached the destination.")
             else:
-                print "\nTrial Aborted!"
-                print "Agent did not reach the destination."
+                print("\nTrial Aborted!")
+                print("Agent did not reach the destination.")
 
             # Increment
             total_trials = total_trials + 1
@@ -249,15 +249,15 @@ class Simulator4x1(object):
 
                 for state in a.Q:
                     f.write("{}\n".format(state))
-                    for action, reward in a.Q[state].iteritems():
-                        print action , reward
+                    for action, reward in a.Q[state].items():
+                        print("{} , {}".format(action,reward))
                         f.write(" -- {} : {:.2f}\n".format(action, reward))
                     f.write("\n")  
                 self.table_file.close()
 
             self.log_file.close()
 
-        print "\nSimulation ended. . . "
+        print("\nSimulation ended. . . ")
 
         # Report final metrics
         
@@ -276,19 +276,19 @@ class Simulator4x1(object):
 
             # Previous State
             if status['state']:
-                print "Agent previous state: {}".format(status['state'])
+                print("Agent previous state: {}".format(status['state']))
             else:
-                print "!! Agent state not been updated!"
+                print("!! Agent state not been updated!")
 
             
         # Starting new trial
         else:
             a = self.env.primary_agent
-            print "Simulating trial. . . "
+            print("Simulating trial. . . ")
             if a.learning:
-                print "epsilon = {:.4f}; alpha = {:.4f}".format(a.epsilon, a.alpha)
+                print("epsilon = {:.4f}; alpha = {:.4f}".format(a.epsilon, a.alpha))
             else:
-                print "Agent not set to learn."
+                print("Agent not set to learn.")
 
     def renderMindState(self, xadjustment,yadjustment):
         if self.vanilla:
@@ -327,7 +327,7 @@ class Simulator4x1(object):
         
         
         #
-        for position, state in self.env.states.iteritems():
+        for position, state in self.env.states.items():
             self.pygame.draw.rect(self.screen,self.colors['black'],self.pygame.Rect(position*self.blocksize,0,self.blocksize,self.blocksize))
             self.pygame.draw.rect(self.screen,self.colors['white'],self.pygame.Rect((position*self.blocksize)+2,2,self.blocksize - 4, self.blocksize -4))
             
@@ -336,7 +336,7 @@ class Simulator4x1(object):
             
         # * Dynamic elements
         #self.font = self.pygame.font.Font(None, 20)
-        for agent, state in self.env.agent_states.iteritems():
+        for agent, state in self.env.agent_states.items():
             # Compute precise agent location here (back from the intersection some)
             
             agent_pos = ((state['location'] * self.blocksize)+(self.blocksize/3), self.blocksize - (self.blocksize /2))
@@ -361,7 +361,7 @@ class Simulator4x1(object):
         pause_text = "Simulation Paused. Press any key to continue. . ."
         self.screen.blit(self.font.render(pause_text, True, self.colors['red'], self.bg_color), (400, self.height - 30))
         self.pygame.display.flip()
-        print pause_text
+        print(pause_text)
         while self.paused:
             for event in self.pygame.event.get():
                 if event.type == self.pygame.KEYDOWN:
