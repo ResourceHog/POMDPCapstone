@@ -10,9 +10,10 @@ class LearningAgent(Agent):
     """ An agent that learns to drive in the Smartcab world.
         This is the object you will be modifying. """ 
 
-    def __init__(self, env, learning=False, epsilon=1.0, alpha=0.5):
+    def __init__(self, env, environment_type, learning=False, epsilon=1.0, alpha=0.5):
         super(LearningAgent, self).__init__(env)     # Set the agent in the evironment 
         self.planner = RoutePlanner(self.env, self)  # Create a route planner
+        print(self.env.valid_actions)
         self.valid_actions = self.env.valid_actions  # The set of valid actions
 
         # Set parameters of the learning agent
@@ -140,16 +141,14 @@ class LearningAgent(Agent):
         # When not learning, choose a random action
         # When learning, choose a random action with 'epsilon' probability
         #   Otherwise, choose an action with the highest Q-value for the current state
-        randomnum = random.Random()
+        randomnum = random.uniform(0,1)
         if(randomnum <= self.epsilon):
-            #for paction in self.valid_actions:
-                #if self.Q[state][paction] is 0.0:
-                #    action = paction
-                #else:
-                    #chosenaction = random.randint(0,3)
-                    #action = self.valid_actions[chosenaction]
-            chosenaction = random.randint(0,3)
-            action = self.valid_actions[chosenaction]
+            for paction in self.valid_actions:
+                if self.Q[state][paction] is 0.0:
+                    action = paction
+                else:
+                    chosenaction = random.randint(0,len(self.valid_actions)-1)
+                    action = self.valid_actions[chosenaction]
         else:
             maxQ = self.get_maxQ(state)
             highqactions = []
@@ -162,7 +161,7 @@ class LearningAgent(Agent):
             chosenaction = random.randint(0,posibilities)
             action = highqactions[chosenaction]
             
-            #print action
+        print(action)
             
             
         return action

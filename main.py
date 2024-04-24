@@ -68,7 +68,7 @@ def run():
     
     print("starting second sim")
     sim4x1 = Simulator4x1(fourby1env,update_delay = delay,log_metrics=isLogging    ,optimized=isOptimised)
-    sim4x1.run(n_test = 50)
+    sim4x1.run(n_test = 2)
     
     
     print("starting control.")
